@@ -1,0 +1,50 @@
+# CraftFire 构建输出
+/build/
+/dist/
+
+# Go
+backend/vendor/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# 测试
+*.test
+*.out
+coverage.html
+
+# 依赖
+frontend/node_modules/
+frontend/dist/
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# 日志
+logs/
+*.log
+
+# 环境变量
+.env
+.env.local
+.env.*.local
+
+# Wails
+frontend/src/wailsjs/
+
+# 模型数据
+models_cache/
+*.glb.tmp
+*.gltf.tmp
+backend/frontend/dist/*
+.claude/*

@@ -1,0 +1,29 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "go.lintTool": "golangci-lint",
+  "go.useLanguageServer": true,
+  "[go]": {
+    "editor.defaultFormatter": "golang.go",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  },
+  "[vue]": {
+    "editor.defaultFormatter": "vue.volar"
+  },
+  "typescript.tsdk": "frontend/node_modules/typescript/lib",
+  "tailwindCSS.experimental.classRegex": [
+    [
+      "class=\"([^\"]*)\"",
+      "([a-zA-Z0-9\\-:]+)"
+    ]
+  ],
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  }
+}

@@ -1,0 +1,127 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================
+ * CraftFire Low-Poly 主题样式
+ * ========================================== */
+
+@layer base {
+	:root {
+		--craft-primary: #ff4da6;
+		--craft-secondary: #ffc93d;
+		--craft-accent: #ff6f5c;
+		--craft-bg: #0f2a3a;
+		--craft-surface: #183a4f;
+		--craft-text: #fff7ef;
+	}
+
+	/* Neon 主题 */
+	.theme-neon {
+		--craft-primary: #ff3eb5;
+		--craft-secondary: #37e8ff;
+		--craft-accent: #ffe45a;
+		--craft-bg: #4d4d70;
+		--craft-surface: #1a1a2e;
+	}
+
+	/* Earth 主题 */
+	.theme-earth {
+		--craft-primary: #5cb85c;
+		--craft-secondary: #ffb347;
+		--craft-accent: #ff6f61;
+		--craft-bg: #1b1b1b;
+		--craft-surface: #2d2d2d;
+	}
+
+	body {
+		font-family: "Press Start 2P", monospace;
+		margin: 0;
+		padding: 0;
+	}
+
+	/* 自定义滚动条（WebKit） */
+	::-webkit-scrollbar {
+		width: 8px;
+		height: 8px;
+	}
+
+	::-webkit-scrollbar-track {
+		background: var(--craft-bg);
+	}
+
+	::-webkit-scrollbar-thumb {
+		background: var(--craft-primary);
+		border: 1px solid rgba(0, 0, 0, 0.5);
+	}
+
+	::-webkit-scrollbar-thumb:hover {
+		background: var(--craft-secondary);
+	}
+}
+
+@layer components {
+	/* Low-Poly 按钮基础样式 */
+	.btn-lowpoly {
+		@apply px-6 py-3 font-game text-sm uppercase tracking-wider
+           border-2 border-black shadow-lowpoly bg-white text-black
+           hover:-translate-y-0.5 hover:-translate-x-0.5 hover:shadow-lowpoly-lg
+           active:translate-x-0.5 active:translate-y-0.5 active:shadow-lowpoly-sm
+           transition-all duration-100
+           cursor-pointer select-none relative;
+	}
+
+	.btn-primary {
+		@apply btn-lowpoly bg-craft-primary text-white border-craft-secondary hover:bg-craft-primary/90;
+	}
+
+	.btn-secondary {
+		@apply btn-lowpoly bg-craft-secondary text-black border-craft-accent hover:bg-craft-secondary/90;
+	}
+
+	.btn-danger {
+		@apply btn-lowpoly bg-craft-accent text-white hover:bg-craft-accent/90;
+	}
+
+	.btn-info {
+		@apply btn-lowpoly bg-craft-surface text-craft-text border-craft-primary hover:bg-craft-surface/90;
+	}
+
+	/* Low-Poly 输入框 */
+	.input-lowpoly {
+		@apply w-full px-4 py-3 font-game text-sm
+           bg-craft-surface text-craft-light
+           border-2 border-craft-primary shadow-lowpoly
+           focus:border-craft-secondary focus:shadow-lowpoly-lg focus:outline-none
+           placeholder:text-gray-500 transition-all duration-200;
+	}
+
+	/* Low-Poly 面板 */
+	.panel-lowpoly {
+		@apply bg-craft-dark/90 backdrop-blur-sm
+           border-2 border-craft-primary shadow-lowpoly-lg p-6;
+	}
+
+	/* 焦点可见性样式（无障碍） */
+	.btn-lowpoly:focus-visible,
+	.input-lowpoly:focus-visible {
+		@apply outline-2 outline-offset-2 outline-craft-secondary;
+	}
+}
+
+/* 减少动画偏好 */
+@media (prefers-reduced-motion: reduce) {
+	* {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}
+
+/* 减少透明度偏好 */
+@media (prefers-reduced-transparency: reduce) {
+	.panel-lowpoly {
+		backdrop-filter: none;
+		background-color: rgba(11, 18, 32, 0.98);
+	}
+}

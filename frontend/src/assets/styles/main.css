@@ -1,0 +1,166 @@
+/* CraftFire 全局样式入口 */
+@import "./variables.css";
+
+/* ==========================================
+ * 全局动画
+ * ========================================== */
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes fadeOut {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
+}
+
+@keyframes slideUp {
+	from {
+		transform: translateY(20px);
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}
+
+@keyframes slideDown {
+	from {
+		transform: translateY(-20px);
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}
+
+@keyframes pulse {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.6;
+	}
+}
+
+@keyframes shake {
+	0%,
+	100% {
+		transform: translateX(0);
+	}
+	25% {
+		transform: translateX(-4px);
+	}
+	75% {
+		transform: translateX(4px);
+	}
+}
+
+/* ==========================================
+ * 游戏特有样式
+ * ========================================== */
+
+/* 准心 */
+.crosshair {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	pointer-events: none;
+	z-index: 100;
+}
+
+.crosshair::before,
+.crosshair::after {
+	content: "";
+	position: absolute;
+	background: white;
+}
+
+.crosshair::before {
+	width: 2px;
+	height: 20px;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.crosshair::after {
+	width: 20px;
+	height: 2px;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+}
+
+/* 血量条颜色过渡 */
+.health-bar {
+	transition:
+		width 0.3s ease,
+		background-color 0.3s ease;
+}
+
+.health-high {
+	background-color: #4caf50;
+}
+.health-mid {
+	background-color: #ff9800;
+}
+.health-low {
+	background-color: #f44336;
+}
+
+/* Toast 通知动画 */
+.toast-enter-active {
+	animation: slideDown 0.3s ease;
+}
+
+.toast-leave-active {
+	animation: fadeOut 0.2s ease;
+}
+
+/* 加载进度条 */
+.loading-bar {
+	background: linear-gradient(
+		90deg,
+		var(--craft-primary),
+		var(--craft-secondary)
+	);
+	transition: width 0.4s ease;
+}
+
+/* 拖拽区域高亮 */
+.drop-zone-active {
+	border-color: var(--craft-primary) !important;
+	background-color: rgba(0, 209, 178, 0.1) !important;
+}
+
+/* 全屏覆盖层 */
+.overlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.7);
+	backdrop-filter: blur(4px);
+	z-index: 50;
+}
+
+/* 隐藏滚动条但保留滚动功能 */
+.scrollbar-hide {
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+	display: none;
+}

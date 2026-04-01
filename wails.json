@@ -1,0 +1,20 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "CraftFire",
+  "outputfilename": "CraftFire",
+  "frontend:install": "pnpm install",
+  "frontend:build": "pnpm run build:no-typecheck",
+  "frontend:dev:serverUrl": "http://localhost:5173",
+  "frontend:dir": "./frontend/dist",
+  "wailsjsdir": "./frontend/src",
+  "author": {
+    "name": "CraftFire Team"
+  },
+  "info": {
+    "companyName": "CraftFire Studio",
+    "productName": "CraftFire",
+    "productVersion": "1.0.0",
+    "copyright": "Copyright © 2026 CraftFire Studio",
+    "comments": "沙盒 + FPS 混合游戏"
+  }
+}

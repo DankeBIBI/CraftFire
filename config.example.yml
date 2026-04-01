@@ -1,0 +1,71 @@
+# ==========================================
+# CraftFire 应用配置
+# ==========================================
+
+# 应用信息
+app:
+  name: "CraftFire"
+  version: "1.0.0"
+  description: "Sandbox + FPS Hybrid Game"
+
+# 服务器配置
+server:
+  defaultTickRate: 8
+  maxRoomsPerIP: 5
+  maxConcurrentPlayers: 200
+  roomIdleTimeout: 3600
+  playerIdleTimeout: 300
+
+# LAN 发现配置
+lan:
+  broadcastInterval: 5
+  discoveryPort: 9999
+  broadcastAddr: "255.255.255.255"
+
+# 世界配置
+world:
+  chunkSize: 16
+  renderDistance: 8
+  worldHeightLimit: 256
+  persistenceInterval: 300
+  autoSave: true
+
+# 物理引擎配置
+physics:
+  gravity: 9.8
+  dragCoefficient: 0.1
+  maxVelocity: 100
+  authority: "server"
+  useWasm: false
+  workerThreshold: 1000
+
+# 前端配置
+client:
+  targetFPS: 60
+  interpolationDuration: 125
+  pointerLockRequired: true
+  defaultRenderDistance: 6
+
+# UI 配置
+ui:
+  language: "zh-CN"
+  uiScale: 1.0
+  showDebugInfo: false
+
+# 日志配置
+logging:
+  level: "INFO"
+  format: "text"
+  output: "console"
+  filePath: "./logs/craftfire.log"
+  maxLogSize: 10485760
+  maxLogBackups: 5
+
+# 安全配置
+security:
+  roomPasswordRequired: false
+  enableTLS: false
+  rateLimitPerSecond: 100
+  adminPassword: "admin123"
+  adminPasswordHash: ""
+  enableAdminPanel: true
