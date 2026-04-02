@@ -20,6 +20,7 @@ export const useWorldStore = defineStore("world", () => {
   const pendingChanges = ref<WorldChangeEntry[]>([]);
   const worldSeed = ref("");
   const isWorldLoaded = ref(false);
+  const worldVersion = ref(0);
 
   // ─── 计算属性 ────────────────────────────
   const totalBlocks = computed(() => blocks.value.size);
@@ -41,6 +42,7 @@ export const useWorldStore = defineStore("world", () => {
       timestamp: Date.now(),
       playerId,
     });
+    worldVersion.value += 1;
   }
 
   /** 移除方块（本地预测） */
@@ -57,6 +59,7 @@ export const useWorldStore = defineStore("world", () => {
         action: "remove",
         timestamp: Date.now(),
       });
+      worldVersion.value += 1;
     }
   }
 
@@ -67,6 +70,7 @@ export const useWorldStore = defineStore("world", () => {
 
   /** 应用服务器下发的世界更新 */
   function applyWorldUpdate(changes: WorldChangeEntry[]) {
+    let changed = false;
     for (const change of changes) {
       const key = blockKey(change.x, change.y, change.z);
       if (change.action === "place") {
@@ -76,10 +80,12 @@ export const useWorldStore = defineStore("world", () => {
           z: change.z,
           type: change.blockType,
         });
+        changed = true;
       } else if (change.action === "remove") {
-        blocks.value.delete(key);
+        changed = blocks.value.delete(key) || changed;
       }
     }
+    if (changed) worldVersion.value += 1;
   }
 
   /** 加载区块数据 */
@@ -90,6 +96,7 @@ export const useWorldStore = defineStore("world", () => {
     for (const block of chunk.blocks) {
       blocks.value.set(blockKey(block.x, block.y, block.z), block);
     }
+    worldVersion.value += 1;
   }
 
   /** 卸载区块 */
@@ -101,6 +108,7 @@ export const useWorldStore = defineStore("world", () => {
         blocks.value.delete(blockKey(block.x, block.y, block.z));
       }
       loadedChunks.value.delete(chunkKey);
+      worldVersion.value += 1;
     }
   }
 
@@ -112,6 +120,7 @@ export const useWorldStore = defineStore("world", () => {
       blocks.value.set(blockKey(block.x, block.y, block.z), block);
     }
     isWorldLoaded.value = true;
+    worldVersion.value += 1;
   }
 
   /** 清空待处理变更 */
@@ -125,6 +134,7 @@ export const useWorldStore = defineStore("world", () => {
     pendingChanges.value = [];
     worldSeed.value = "";
     isWorldLoaded.value = false;
+    worldVersion.value += 1;
   }
 
   return {
@@ -134,6 +144,7 @@ export const useWorldStore = defineStore("world", () => {
     pendingChanges,
     worldSeed,
     isWorldLoaded,
+    worldVersion,
     // Computed
     totalBlocks,
     loadedChunkCount,

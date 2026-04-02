@@ -7,7 +7,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useUIStore } from '@/stores/ui'
 import { useRoomStore } from '@/stores/room'
 import { usePlayerStore } from '@/stores/player'
-import { wsService } from '@/services/WebSocketService'
+import * as wailsService from '@/services/WailsService'
 
 const ui = useUIStore()
 const roomStore = useRoomStore()
@@ -83,64 +83,100 @@ async function handleAuth() {
     authError.value = '请输入管理员密码'
     return
   }
+  if (!roomInfo.value?.roomId) {
+    authError.value = '未检测到房间信息'
+    return
+  }
 
   isLoading.value = true
   authError.value = ''
 
   try {
-    await new Promise(resolve => setTimeout(resolve, 500))
-
-    if (adminPassword.value === 'admin') {
-      isAuthenticated.value = true
-      ui.showToast('管理员验证成功', 'success')
-      startPlayerRefresh()
-      addLog('管理员登录')
-    } else {
-      authError.value = '密码错误'
-      addLog('登录失败 - 密码错误', undefined, 'other')
-    }
+    await wailsService.verifyAdminPassword(roomInfo.value.roomId, adminPassword.value)
+    isAuthenticated.value = true
+    ui.showToast('管理员验证成功', 'success')
+    await startPlayerRefresh()
+    addLog('管理员登录')
   } catch {
-    authError.value = '验证失败，请重试'
+    authError.value = '密码错误或验证失败'
+    addLog('登录失败 - 密码错误', undefined, 'other')
   } finally {
     isLoading.value = false
   }
 }
 
 // 开始刷新玩家列表
-function startPlayerRefresh() {
+async function startPlayerRefresh() {
+  await refreshRoomConfig()
   refreshOnlinePlayers()
   refreshInterval = setInterval(refreshOnlinePlayers, 3000)
 }
 
-// 刷新在线玩家
-function refreshOnlinePlayers() {
-  const players: typeof onlinePlayers.value = []
+// 获取房间配置
+async function refreshRoomConfig() {
+  if (!roomInfo.value?.roomId) return
+  try {
+    const config = await wailsService.getRoomConfig(roomInfo.value.roomId)
+    if (config) {
+      isRoomLocked.value = config.isLocked ?? false
+      if (roomStore.currentRoom) {
+        roomStore.currentRoom.maxPlayers = config.maxPlayers
+        roomStore.currentRoom.gameMode = config.gameMode as 'sandbox' | 'survival' | 'pvp'
+        roomStore.currentRoom.worldSeed = config.worldSeed
+      }
+    }
+  } catch {
+    // 忽略错误
+  }
+}
 
-  // 添加本地玩家 (房主)
-  if (playerStore.localPlayer) {
-    players.push({
-      id: playerStore.localPlayer.id,
-      name: playerStore.localPlayer.name + ' ★',
-      health: playerStore.localPlayer.health,
-      isBot: false,
-      isMuted: false,
-      position: playerStore.localPlayer.position,
-    })
+// 刷新在线玩家
+function isVec3Like(v: unknown): v is { x: number; y: number; z: number } {
+  if (typeof v !== 'object' || !v) return false
+  const p = v as { x?: unknown; y?: unknown; z?: unknown }
+  return typeof p.x === 'number' && typeof p.y === 'number' && typeof p.z === 'number'
+}
+
+function normalizeOnlinePlayer(raw: unknown) {
+  const p = raw as {
+    id?: unknown
+    name?: unknown
+    health?: unknown
+    isMuted?: unknown
+    position?: unknown
+  }
+  if (typeof p.id !== 'string' || typeof p.name !== 'string') return null
+  return {
+    id: p.id,
+    name: p.name,
+    health: typeof p.health === 'number' ? p.health : 100,
+    isBot: false,
+    isMuted: p.isMuted === true,
+    position: isVec3Like(p.position) ? p.position : undefined,
+  }
+}
+
+async function refreshOnlinePlayers() {
+  if (!roomInfo.value?.roomId) {
+    onlinePlayers.value = []
+    return
   }
 
-  // 添加远程玩家
-  playerStore.remotePlayers.forEach((p) => {
-    players.push({
-      id: p.id,
-      name: p.name,
-      health: p.health,
-      isBot: false,
-      isMuted: false,
-      position: p.position,
-    })
-  })
+  try {
+    const players = await wailsService.getOnlinePlayers(roomInfo.value.roomId)
+    const normalized = Array.isArray(players)
+      ? players
+          .map((p) => normalizeOnlinePlayer(p))
+          .filter((p): p is NonNullable<typeof p> => !!p)
+      : []
+    onlinePlayers.value = normalized
 
-  onlinePlayers.value = players
+    if (roomStore.currentRoom) {
+      roomStore.currentRoom.currentPlayers = normalized.length
+    }
+  } catch {
+    ui.showToast('刷新玩家列表失败', 'warning')
+  }
 }
 
 // 选中玩家查看详情
@@ -151,13 +187,11 @@ function selectPlayer(player: typeof onlinePlayers.value[0]) {
 // 踢出玩家
 async function kickPlayer(playerId: string, playerName: string) {
   if (!confirm(`确定要踢出玩家 "${playerName}" 吗？`)) return
+  if (!roomInfo.value?.roomId) return
 
   isLoading.value = true
   try {
-    wsService.send('admin_kick', {
-      targetPlayerId: playerId,
-      reason: '违反游戏规则',
-    })
+    await wailsService.kickPlayer(roomInfo.value.roomId, playerId, '管理员操作')
 
     onlinePlayers.value = onlinePlayers.value.filter(p => p.id !== playerId)
     playerStore.removeRemotePlayer(playerId)
@@ -176,83 +210,140 @@ async function kickPlayer(playerId: string, playerName: string) {
 }
 
 // 静音玩家
-function mutePlayer(playerId: string, playerName: string) {
+async function mutePlayer(playerId: string, playerName: string) {
+  if (!roomInfo.value?.roomId) return
+
   const player = onlinePlayers.value.find(p => p.id === playerId)
   if (!player) return
 
   if (player.isMuted) {
-    player.isMuted = false
-    addLog('取消静音', playerName, 'mute')
-    ui.showToast(`已取消静音 ${playerName}`, 'success')
-  } else {
+    ui.showToast('当前仅支持追加静音时长', 'warning')
+    return
+  }
+
+  isLoading.value = true
+  try {
+    await wailsService.mutePlayer(roomInfo.value.roomId, playerId, 300)
     player.isMuted = true
-    wsService.send('admin_mute', {
-      targetPlayerId: playerId,
-      durationSeconds: 300,
-    })
     addLog('静音玩家', playerName, 'mute')
-    ui.showToast(`已静音玩家 ${playerName}`, 'success')
+    ui.showToast(`已静音玩家 ${playerName}（5分钟）`, 'success')
+  } catch {
+    ui.showToast('静音失败', 'error')
+  } finally {
+    isLoading.value = false
   }
 }
 
 // 发送公告
-function sendBroadcast() {
+async function sendBroadcast() {
   if (!broadcastMessage.value.trim()) {
     ui.showToast('公告内容不能为空', 'warning')
     return
   }
 
-  wsService.send('admin_broadcast', {
-    message: broadcastMessage.value.trim(),
-  })
+  if (!roomInfo.value?.roomId) return
 
-  addLog('发送公告', broadcastMessage.value.trim(), 'broadcast')
-  ui.showToast('公告已发送', 'success')
-  broadcastMessage.value = ''
-  showBroadcastModal.value = false
+  isLoading.value = true
+  try {
+    const message = broadcastMessage.value.trim()
+    await wailsService.broadcastToRoom(roomInfo.value.roomId, message)
+    addLog('发送公告', message, 'broadcast')
+    ui.showToast('公告已发送', 'success')
+    broadcastMessage.value = ''
+    showBroadcastModal.value = false
+  } catch {
+    ui.showToast('发送公告失败', 'error')
+  } finally {
+    isLoading.value = false
+  }
 }
 
 // 锁定/解锁房间
-function toggleRoomLock() {
-  isRoomLocked.value = !isRoomLocked.value
-  if (isRoomLocked.value) {
-    addLog('锁定房间', undefined, 'lock')
-    ui.showToast('房间已锁定', 'success')
-  } else {
-    addLog('解锁房间', undefined, 'unlock')
-    ui.showToast('房间已解锁', 'success')
+async function toggleRoomLock() {
+  if (!roomInfo.value?.roomId) return
+
+  isLoading.value = true
+  try {
+    const newLocked = !isRoomLocked.value
+    await wailsService.setRoomLocked(roomInfo.value.roomId, newLocked)
+    isRoomLocked.value = newLocked
+
+    if (newLocked) {
+      addLog('锁定房间', undefined, 'lock')
+      ui.showToast('房间已锁定', 'success')
+    } else {
+      addLog('解锁房间', undefined, 'unlock')
+      ui.showToast('房间已解锁', 'success')
+    }
+  } catch {
+    ui.showToast('操作失败', 'error')
+  } finally {
+    isLoading.value = false
   }
 }
 
 // 切换游戏模式
-function changeGameMode(mode: string) {
-  if (!roomInfo.value) return
+async function changeGameMode(mode: string) {
+  if (!roomInfo.value?.roomId) return
 
-  wsService.send('admin_change_mode', { mode })
-
-  addLog('切换模式', mode, 'mode')
-  ui.showToast(`游戏模式已切换为 ${mode}`, 'success')
+  isLoading.value = true
+  try {
+    await wailsService.changeGameMode(roomInfo.value.roomId, mode)
+    roomStore.currentRoom = {
+      ...roomStore.currentRoom!,
+      gameMode: mode as 'sandbox' | 'survival' | 'pvp',
+    }
+    addLog('切换模式', mode, 'mode')
+    ui.showToast(`游戏模式已切换为 ${mode}`, 'success')
+  } catch {
+    ui.showToast('切换模式失败', 'error')
+  } finally {
+    isLoading.value = false
+  }
 }
 
 // 给玩家加血
-function healPlayer(playerId: string, playerName: string) {
-  const player = onlinePlayers.value.find(p => p.id === playerId)
-  if (player) {
-    player.health = 100
-    wsService.send('admin_heal', { targetPlayerId: playerId })
+async function healPlayer(playerId: string, playerName: string) {
+  if (!roomInfo.value?.roomId) return
+
+  isLoading.value = true
+  try {
+    await wailsService.healPlayer(roomInfo.value.roomId, playerId)
+    const player = onlinePlayers.value.find(p => p.id === playerId)
+    if (player) {
+      player.health = 100
+    }
     addLog('治疗玩家', playerName)
     ui.showToast(`已为 ${playerName} 恢复满血`, 'success')
+  } catch {
+    ui.showToast('治疗失败', 'error')
+  } finally {
+    isLoading.value = false
   }
 }
 
 // 传送玩家到自己位置
-function teleportToMe(playerId: string, playerName: string) {
-  wsService.send('admin_teleport', {
-    targetPlayerId: playerId,
-    toPosition: playerStore.localPlayer?.position || { x: 0, y: 10, z: 0 },
-  })
-  addLog('传送玩家', playerName)
-  ui.showToast(`已传送 ${playerName} 到身边`, 'success')
+async function teleportToMe(playerId: string, playerName: string) {
+  if (!roomInfo.value?.roomId) return
+
+  const position = playerStore.localPlayer?.position || { x: 0, y: 10, z: 0 }
+
+  isLoading.value = true
+  try {
+    await wailsService.teleportPlayer(
+      roomInfo.value.roomId,
+      playerId,
+      position.x,
+      position.y,
+      position.z
+    )
+    addLog('传送玩家', playerName)
+    ui.showToast(`已传送 ${playerName} 到身边`, 'success')
+  } catch {
+    ui.showToast('传送失败', 'error')
+  } finally {
+    isLoading.value = false
+  }
 }
 
 // 关闭面板

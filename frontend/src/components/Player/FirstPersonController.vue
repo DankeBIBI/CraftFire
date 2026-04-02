@@ -100,6 +100,8 @@ function updateMovement(dt: number) {
 
   if (positionSyncAccumulator >= STORE_SYNC_INTERVAL) {
     playerStore.updateLocalPosition(simulatedPosition)
+    // 同步 velocity 到 playerStore，供 VoxelCharacter 行走动画判断
+    playerStore.updateLocalVelocity(physicsService.velocity)
     positionSyncAccumulator = 0
   }
 

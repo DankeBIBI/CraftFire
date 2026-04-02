@@ -8,11 +8,11 @@ import (
 	"CraftFire/backend/internal/admin"
 	"CraftFire/backend/internal/config"
 	"CraftFire/backend/internal/lan"
-	"CraftFire/backend/internal/relay"
 	applogger "CraftFire/backend/internal/logger"
 	"CraftFire/backend/internal/model"
 	"CraftFire/backend/internal/player"
 	"CraftFire/backend/internal/profile"
+	"CraftFire/backend/internal/relay"
 	"CraftFire/backend/internal/room"
 	"CraftFire/backend/internal/websocket"
 )
@@ -263,6 +263,78 @@ func (a *App) MutePlayer(roomId string, playerId string, durationSeconds int) er
 // GetRoomStats 获取房间统计数据。
 func (a *App) GetRoomStats(roomId string) (*admin.RoomStatistics, error) {
 	return a.adminStats.GetRoomStatistics(roomId)
+}
+
+// SetRoomLocked 设置房间锁定状态。
+func (a *App) SetRoomLocked(roomId string, locked bool) error {
+	r, err := a.roomManager.GetRoom(roomId)
+	if err != nil {
+		return err
+	}
+	r.SetLocked(locked)
+	return nil
+}
+
+// IsRoomLocked 获取房间锁定状态。
+func (a *App) IsRoomLocked(roomId string) (bool, error) {
+	r, err := a.roomManager.GetRoom(roomId)
+	if err != nil {
+		return false, err
+	}
+	return r.IsLocked, nil
+}
+
+// BroadcastToRoom 向房间广播公告消息。
+func (a *App) BroadcastToRoom(roomId string, message string) error {
+	r, err := a.roomManager.GetRoom(roomId)
+	if err != nil {
+		return err
+	}
+	return r.Broadcast(message)
+}
+
+// ChangeGameMode 切换游戏模式。
+func (a *App) ChangeGameMode(roomId string, mode string) error {
+	r, err := a.roomManager.GetRoom(roomId)
+	if err != nil {
+		return err
+	}
+	return r.UpdateConfig(0, mode, "", r.IsPublic)
+}
+
+// HealPlayer 为玩家恢复生命值。
+func (a *App) HealPlayer(roomId string, playerId string) error {
+	r, err := a.roomManager.GetRoom(roomId)
+	if err != nil {
+		return err
+	}
+	return r.HealPlayer(playerId)
+}
+
+// TeleportPlayer 传送玩家到指定位置。
+func (a *App) TeleportPlayer(roomId string, playerId string, x, y, z float64) error {
+	r, err := a.roomManager.GetRoom(roomId)
+	if err != nil {
+		return err
+	}
+	return r.TeleportPlayer(playerId, x, y, z)
+}
+
+// GetRoomConfig 获取房间配置。
+func (a *App) GetRoomConfig(roomId string) (*room.RoomConfig, error) {
+	r, err := a.roomManager.GetRoom(roomId)
+	if err != nil {
+		return nil, err
+	}
+	return &room.RoomConfig{
+		RoomID:     r.ID,
+		Port:       r.Port,
+		MaxPlayers: r.MaxPlayers,
+		GameMode:   r.GameMode,
+		IsPublic:   r.IsPublic,
+		IsLocked:   r.IsLocked,
+		WorldSeed:  r.WorldSeed,
+	}, nil
 }
 
 // ============================================================

@@ -1,63 +1,300 @@
 {
   "id": "jungle_temple",
-  "name": "丛林神庙 · Jungle Temple",
-  "description": "热带密林中的失落金字塔，玛雅石柱，藤蔓垂挂，金色阳光。",
+  "name": "丛林神庙 · Jungle Temple 扩展",
+  "description": "更大的雨林地形与可进入神庙群，掩体体量提升。",
   "author": "CraftFire Team",
   "difficulty": "hard",
-  "recommendedPlayers": "4-12",
-  "size": "56×56",
-  "estimatedBlocks": 1800,
+  "recommendedPlayers": "6-12",
+  "size": "80x80",
+  "estimatedBlocks": 7800,
   "environment": {
-    "skyColor": "#87CEEB",
-    "fogColor": "#6B8E23",
-    "fogNear": 50,
-    "fogFar": 150,
-    "ambientIntensity": 0.5,
-    "ambientColor": "#FFD700",
-    "directionalIntensity": 0.7,
-    "directionalColor": "#FFF4C4",
-    "directionalPosition": [80, 100, 30]
+    "skyColor": "#90D3A8",
+    "fogColor": "#5A8E3D",
+    "fogNear": 65,
+    "fogFar": 205,
+    "ambientIntensity": 0.54,
+    "ambientColor": "#FFE9A8",
+    "directionalIntensity": 0.72,
+    "directionalColor": "#FFF0BA",
+    "directionalPosition": [
+      85,
+      105,
+      35
+    ]
   },
   "layers": [
-    { "y": 0,  "type": "jungleGrass", "x1": -28, "z1": -28, "x2": 27, "z2": 27 },
-    { "y": -1, "type": "jungleDirt",  "x1": -28, "z1": -28, "x2": 27, "z2": 27 }
+    {
+      "y": 0,
+      "type": "jungleGrass",
+      "x1": -40,
+      "z1": -40,
+      "x2": 39,
+      "z2": 39
+    },
+    {
+      "y": -1,
+      "type": "jungleDirt",
+      "x1": -40,
+      "z1": -40,
+      "x2": 39,
+      "z2": 39
+    },
+    {
+      "y": 1,
+      "type": "vine",
+      "x1": -40,
+      "z1": -40,
+      "x2": -37,
+      "z2": 39
+    },
+    {
+      "y": 1,
+      "type": "vine",
+      "x1": 36,
+      "z1": -40,
+      "x2": 39,
+      "z2": 39
+    }
   ],
   "structures": [
-    { "type": "jungleStone", "x1": -14, "y1": 1, "z1": -16, "x2": -6, "y2": 1, "z2": -8 },
-    { "type": "jungleStone", "x1": -13, "y1": 2, "z1": -15, "x2": -7, "y2": 2, "z2": -9 },
-    { "type": "jungleStone", "x1": -12, "y1": 3, "z1": -14, "x2": -8, "y2": 3, "z2": -10 },
-    { "type": "jungleStone", "x1": -11, "y1": 4, "z1": -13, "x2": -9, "y2": 4, "z2": -11 },
-    { "type": "jungleStone", "x1": -10, "y1": 5, "z1": -12, "x2": -10, "y2": 5, "z2": -12 },
-    { "type": "air",         "x1": -13, "y1": 2, "z1": -15, "x2": -7, "y2": 3, "z2": -9 },
-
-    { "type": "jungleStone", "x1": 7,  "y1": 1, "z1": 9,  "x2": 13, "y2": 1, "z2": 15 },
-    { "type": "jungleStone", "x1": 8,  "y1": 2, "z1": 10, "x2": 12, "y2": 2, "z2": 14 },
-    { "type": "jungleStone", "x1": 9,  "y1": 3, "z1": 11, "x2": 11, "y2": 3, "z2": 13 },
-    { "type": "jungleStone", "x1": 10, "y1": 4, "z1": 12, "x2": 10, "y2": 4, "z2": 12 },
-    { "type": "air",         "x1": 8,  "y1": 2, "z1": 10, "x2": 12, "y2": 3, "z2": 14 },
-
-    { "type": "jungleStone", "x1": -20, "y1": 1, "z1": -5,  "x2": -20, "y2": 4, "z2": -5 },
-    { "type": "jungleStone", "x1": -18, "y1": 1, "z1": 5,   "x2": -18, "y2": 4, "z2": 5 },
-    { "type": "jungleStone", "x1": 18,  "y1": 1, "z1": -5,  "x2": 18,  "y2": 4, "z2": -5 },
-    { "type": "jungleStone", "x1": 16,  "y1": 1, "z1": 6,   "x2": 16,  "y2": 4, "z2": 6 },
-    { "type": "jungleStone", "x1": -5,  "y1": 1, "z1": -20, "x2": -5,  "y2": 4, "z2": -20 },
-    { "type": "jungleStone", "x1": 5,   "y1": 1, "z1": -18, "x2": 5,   "y2": 4, "z2": -18 },
-    { "type": "jungleStone", "x1": -5,  "y1": 1, "z1": 18,  "x2": -5,  "y2": 4, "z2": 18 },
-    { "type": "jungleStone", "x1": 5,   "y1": 1, "z1": 20,  "x2": 5,   "y2": 4, "z2": 20 },
-
-    { "type": "vine", "x1": -20, "y1": 3, "z1": 0,  "x2": -20, "y2": 5, "z2": 0 },
-    { "type": "vine", "x1": 18,  "y1": 3, "z1": 0,  "x2": 18,  "y2": 6, "z2": 0 },
-    { "type": "vine", "x1": 0,   "y1": 3, "z1": -22, "x2": 0,   "y2": 4, "z2": -22 },
-    { "type": "vine", "x1": 0,   "y1": 3, "z1": 20,  "x2": 0,   "y2": 5, "z2": 20 },
-
-    { "type": "jungleStone", "x1": -3,  "y1": 1, "z1": -10, "x2": -3, "y2": 2, "z2": 10 },
-    { "type": "jungleStone", "x1": 3,   "y1": 1, "z1": -10, "x2": 3,  "y2": 2, "z2": 10 },
-    { "type": "jungleStone", "x1": -10, "y1": 1, "z1": -3,  "x2": 10, "y2": 2, "z2": -3 },
-    { "type": "jungleStone", "x1": -10, "y1": 1, "z1": 3,   "x2": 10, "y2": 2, "z2": 3 },
-
-    { "type": "pineDark", "x1": -28, "y1": 1, "z1": -28, "x2": -28, "y2": 3, "z2": 28 },
-    { "type": "pineDark", "x1": 28,  "y1": 1, "z1": -28, "x2": 28,  "y2": 3, "z2": 28 },
-    { "type": "pineDark", "x1": -28, "y1": 1, "z1": -28, "x2": 28,  "y2": 3, "z2": -28 },
-    { "type": "pineDark", "x1": -28, "y1": 1, "z1": 28,  "x2": 28,  "y2": 3, "z2": 28 }
+    {
+      "type": "jungleDirt",
+      "x1": -36,
+      "y1": 1,
+      "z1": -18,
+      "x2": -16,
+      "y2": 1,
+      "z2": 2
+    },
+    {
+      "type": "jungleStone",
+      "x1": -36,
+      "y1": 2,
+      "z1": -18,
+      "x2": -16,
+      "y2": 8,
+      "z2": -18
+    },
+    {
+      "type": "jungleStone",
+      "x1": -36,
+      "y1": 2,
+      "z1": 2,
+      "x2": -29,
+      "y2": 8,
+      "z2": 2
+    },
+    {
+      "type": "jungleStone",
+      "x1": -23,
+      "y1": 2,
+      "z1": 2,
+      "x2": -16,
+      "y2": 8,
+      "z2": 2
+    },
+    {
+      "type": "jungleStone",
+      "x1": -36,
+      "y1": 2,
+      "z1": -18,
+      "x2": -36,
+      "y2": 8,
+      "z2": 2
+    },
+    {
+      "type": "jungleStone",
+      "x1": -16,
+      "y1": 2,
+      "z1": -18,
+      "x2": -16,
+      "y2": 8,
+      "z2": 2
+    },
+    {
+      "type": "jungleStone",
+      "x1": -36,
+      "y1": 8,
+      "z1": -18,
+      "x2": -16,
+      "y2": 8,
+      "z2": 2
+    },
+    {
+      "type": "jungleDirt",
+      "x1": 12,
+      "y1": 1,
+      "z1": -34,
+      "x2": 34,
+      "y2": 1,
+      "z2": -14
+    },
+    {
+      "type": "jungleStone",
+      "x1": 12,
+      "y1": 2,
+      "z1": -34,
+      "x2": 34,
+      "y2": 9,
+      "z2": -34
+    },
+    {
+      "type": "jungleStone",
+      "x1": 12,
+      "y1": 2,
+      "z1": -14,
+      "x2": 34,
+      "y2": 9,
+      "z2": -14
+    },
+    {
+      "type": "jungleStone",
+      "x1": 12,
+      "y1": 2,
+      "z1": -34,
+      "x2": 12,
+      "y2": 9,
+      "z2": -14
+    },
+    {
+      "type": "jungleStone",
+      "x1": 34,
+      "y1": 2,
+      "z1": -34,
+      "x2": 34,
+      "y2": 9,
+      "z2": -27
+    },
+    {
+      "type": "jungleStone",
+      "x1": 34,
+      "y1": 2,
+      "z1": -21,
+      "x2": 34,
+      "y2": 9,
+      "z2": -14
+    },
+    {
+      "type": "jungleStone",
+      "x1": 12,
+      "y1": 9,
+      "z1": -34,
+      "x2": 34,
+      "y2": 9,
+      "z2": -14
+    },
+    {
+      "type": "jungleDirt",
+      "x1": 6,
+      "y1": 1,
+      "z1": 12,
+      "x2": 30,
+      "y2": 1,
+      "z2": 34
+    },
+    {
+      "type": "jungleStone",
+      "x1": 6,
+      "y1": 2,
+      "z1": 12,
+      "x2": 15,
+      "y2": 7,
+      "z2": 12
+    },
+    {
+      "type": "jungleStone",
+      "x1": 22,
+      "y1": 2,
+      "z1": 12,
+      "x2": 30,
+      "y2": 7,
+      "z2": 12
+    },
+    {
+      "type": "jungleStone",
+      "x1": 6,
+      "y1": 2,
+      "z1": 34,
+      "x2": 30,
+      "y2": 7,
+      "z2": 34
+    },
+    {
+      "type": "jungleStone",
+      "x1": 6,
+      "y1": 2,
+      "z1": 12,
+      "x2": 6,
+      "y2": 7,
+      "z2": 34
+    },
+    {
+      "type": "jungleStone",
+      "x1": 30,
+      "y1": 2,
+      "z1": 12,
+      "x2": 30,
+      "y2": 7,
+      "z2": 34
+    },
+    {
+      "type": "jungleStone",
+      "x1": 6,
+      "y1": 7,
+      "z1": 12,
+      "x2": 30,
+      "y2": 7,
+      "z2": 34
+    },
+    {
+      "type": "vine",
+      "x1": -34,
+      "y1": 3,
+      "z1": -8,
+      "x2": -34,
+      "y2": 8,
+      "z2": -8
+    },
+    {
+      "type": "vine",
+      "x1": 30,
+      "y1": 3,
+      "z1": -24,
+      "x2": 30,
+      "y2": 9,
+      "z2": -24
+    },
+    {
+      "type": "jungleStone",
+      "x1": -12,
+      "y1": 1,
+      "z1": 18,
+      "x2": -2,
+      "y2": 4,
+      "z2": 26
+    },
+    {
+      "type": "jungleStone",
+      "x1": -2,
+      "y1": 1,
+      "z1": -30,
+      "x2": 8,
+      "y2": 5,
+      "z2": -22
+    }
+  ],
+  "scatters": [
+    {
+      "on": "jungleGrass",
+      "type": "vine",
+      "probability": 0.12,
+      "yOffset": 1
+    },
+    {
+      "on": "jungleGrass",
+      "type": "jungleStone",
+      "probability": 0.07,
+      "yOffset": 1
+    }
   ]
 }

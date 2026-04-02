@@ -11,4 +11,5 @@ type RoomConfig struct {
 	LastActivityAt int64  `json:"lastActivityAt"`
 	IsPublic       bool   `json:"isPublic"`
 	GameMode       string `json:"gameMode"`
+	IsLocked       bool   `json:"isLocked"`
 }

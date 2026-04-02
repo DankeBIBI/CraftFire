@@ -1,58 +1,290 @@
 {
   "id": "neon_grid",
-  "name": "霓虹方格 · Neon Grid",
-  "description": "赛博朋克未来都市，霓虹高塔，网格地板，光柱刺破夜空。",
+  "name": "霓虹方格 · Neon Grid 竞技版",
+  "description": "更大的赛博竞技场，塔楼可进入，增加多色掩体。",
   "author": "CraftFire Team",
   "difficulty": "easy",
-  "recommendedPlayers": "2-10",
-  "size": "56×56",
-  "estimatedBlocks": 1400,
+  "recommendedPlayers": "4-12",
+  "size": "80x80",
+  "estimatedBlocks": 6400,
   "environment": {
-    "skyColor": "#050510",
-    "fogColor": "#0A0A2A",
-    "fogNear": 70,
-    "fogFar": 200,
-    "ambientIntensity": 0.25,
-    "ambientColor": "#1A1A3A",
-    "directionalIntensity": 0.3,
-    "directionalColor": "#8866FF",
-    "directionalPosition": [20, 80, 20]
+    "skyColor": "#040412",
+    "fogColor": "#0E1034",
+    "fogNear": 80,
+    "fogFar": 240,
+    "ambientIntensity": 0.32,
+    "ambientColor": "#1E2250",
+    "directionalIntensity": 0.38,
+    "directionalColor": "#8A85FF",
+    "directionalPosition": [
+      25,
+      85,
+      25
+    ]
   },
   "layers": [
-    { "y": 0, "type": "gridBase", "x1": -28, "z1": -28, "x2": 27, "z2": 27 }
+    {
+      "y": 0,
+      "type": "gridBase",
+      "x1": -40,
+      "z1": -40,
+      "x2": 39,
+      "z2": 39
+    },
+    {
+      "y": 1,
+      "type": "gridLine",
+      "x1": -40,
+      "z1": -40,
+      "x2": 39,
+      "z2": 39
+    }
   ],
   "structures": [
-    { "type": "neonBlue",   "x1": -28, "y1": 0, "z1": -28, "x2": 27, "y2": 0, "z2": 27 },
-    { "type": "gridLine",   "x1": -28, "y1": 1, "z1": -28, "x2": 27, "y2": 1, "z2": 27 },
-
-    { "type": "neonPurple", "x1": -18, "y1": 1, "z1": -18, "x2": -12, "y2": 6, "z2": -12 },
-    { "type": "neonBlue",   "x1": -17, "y1": 7, "z1": -17, "x2": -13, "y2": 7, "z2": -13 },
-    { "type": "neonPink",   "x1": -15, "y1": 8, "z1": -15, "x2": -15, "y2": 9, "z2": -15 },
-
-    { "type": "neonBlue",   "x1": 12,  "y1": 1, "z1": 12,  "x2": 18,  "y2": 5, "z2": 18 },
-    { "type": "neonPurple", "x1": 13,  "y1": 6, "z1": 13,  "x2": 17,  "y2": 6, "z2": 17 },
-    { "type": "neonOrange", "x1": 15,  "y1": 7, "z1": 15,  "x2": 15,  "y2": 7, "z2": 15 },
-
-    { "type": "neonGreen",  "x1": 12,  "y1": 1, "z1": -18, "x2": 18,  "y2": 4, "z2": -12 },
-    { "type": "neonPink",   "x1": 13,  "y1": 5, "z1": -17, "x2": 17,  "y2": 5, "z2": -13 },
-
-    { "type": "neonOrange", "x1": -18, "y1": 1, "z1": 12,  "x2": -12, "y2": 4, "z2": 18 },
-    { "type": "neonGreen",  "x1": -17, "y1": 5, "z1": 13,  "x2": -13, "y2": 5, "z2": 17 },
-
-    { "type": "neonBlue",   "x1": -5,  "y1": 1, "z1": -5,  "x2": 5,   "y2": 1, "z2": 5 },
-    { "type": "neonPurple", "x1": -3,  "y1": 2, "z1": -3,  "x2": 3,   "y2": 2, "z2": 3 },
-    { "type": "neonPink",   "x1": 0,   "y1": 3, "z1": 0,   "x2": 0,   "y2": 3, "z2": 0 },
-
-    { "type": "neonPink",   "x1": -8,  "y1": 1, "z1": -8,  "x2": -8,  "y2": 10, "z2": -8 },
-    { "type": "neonBlue",   "x1": 8,   "y1": 1, "z1": -8,  "x2": 8,   "y2": 10, "z2": -8 },
-    { "type": "neonPurple", "x1": -8,  "y1": 1, "z1": 8,   "x2": -8,  "y2": 10, "z2": 8 },
-    { "type": "neonOrange", "x1": 8,   "y1": 1, "z1": 8,   "x2": 8,   "y2": 10, "z2": 8 },
-    { "type": "neonPink",   "x1": 0,   "y1": 1, "z1": -14, "x2": 0,   "y2": 10, "z2": -14 },
-    { "type": "neonGreen",  "x1": 0,   "y1": 1, "z1": 14,  "x2": 0,   "y2": 10, "z2": 14 },
-
-    { "type": "neonBlue",   "x1": -28, "y1": 1, "z1": -28, "x2": 27, "y2": 3, "z2": -28 },
-    { "type": "neonPurple", "x1": -28, "y1": 1, "z1": 28,  "x2": 27, "y2": 3, "z2": 28 },
-    { "type": "neonGreen",  "x1": -28, "y1": 1, "z1": -28, "x2": -28, "y2": 3, "z2": 28 },
-    { "type": "neonOrange", "x1": 28,  "y1": 1, "z1": -28, "x2": 28,  "y2": 3, "z2": 28 }
+    {
+      "type": "gridLine",
+      "x1": -34,
+      "y1": 2,
+      "z1": -34,
+      "x2": -14,
+      "y2": 2,
+      "z2": -14
+    },
+    {
+      "type": "neonBlue",
+      "x1": -34,
+      "y1": 3,
+      "z1": -34,
+      "x2": -14,
+      "y2": 9,
+      "z2": -34
+    },
+    {
+      "type": "neonBlue",
+      "x1": -34,
+      "y1": 3,
+      "z1": -14,
+      "x2": -27,
+      "y2": 9,
+      "z2": -14
+    },
+    {
+      "type": "neonBlue",
+      "x1": -21,
+      "y1": 3,
+      "z1": -14,
+      "x2": -14,
+      "y2": 9,
+      "z2": -14
+    },
+    {
+      "type": "neonBlue",
+      "x1": -34,
+      "y1": 3,
+      "z1": -34,
+      "x2": -34,
+      "y2": 9,
+      "z2": -14
+    },
+    {
+      "type": "neonBlue",
+      "x1": -14,
+      "y1": 3,
+      "z1": -34,
+      "x2": -14,
+      "y2": 9,
+      "z2": -14
+    },
+    {
+      "type": "neonPurple",
+      "x1": -34,
+      "y1": 9,
+      "z1": -34,
+      "x2": -14,
+      "y2": 9,
+      "z2": -14
+    },
+    {
+      "type": "gridLine",
+      "x1": 14,
+      "y1": 2,
+      "z1": -34,
+      "x2": 34,
+      "y2": 2,
+      "z2": -14
+    },
+    {
+      "type": "neonGreen",
+      "x1": 14,
+      "y1": 3,
+      "z1": -34,
+      "x2": 34,
+      "y2": 10,
+      "z2": -34
+    },
+    {
+      "type": "neonGreen",
+      "x1": 14,
+      "y1": 3,
+      "z1": -14,
+      "x2": 34,
+      "y2": 10,
+      "z2": -14
+    },
+    {
+      "type": "neonGreen",
+      "x1": 14,
+      "y1": 3,
+      "z1": -34,
+      "x2": 14,
+      "y2": 10,
+      "z2": -27
+    },
+    {
+      "type": "neonGreen",
+      "x1": 14,
+      "y1": 3,
+      "z1": -21,
+      "x2": 14,
+      "y2": 10,
+      "z2": -14
+    },
+    {
+      "type": "neonGreen",
+      "x1": 34,
+      "y1": 3,
+      "z1": -34,
+      "x2": 34,
+      "y2": 10,
+      "z2": -14
+    },
+    {
+      "type": "neonPink",
+      "x1": 14,
+      "y1": 10,
+      "z1": -34,
+      "x2": 34,
+      "y2": 10,
+      "z2": -14
+    },
+    {
+      "type": "gridLine",
+      "x1": -12,
+      "y1": 2,
+      "z1": 12,
+      "x2": 12,
+      "y2": 2,
+      "z2": 34
+    },
+    {
+      "type": "neonOrange",
+      "x1": -12,
+      "y1": 3,
+      "z1": 12,
+      "x2": -3,
+      "y2": 8,
+      "z2": 12
+    },
+    {
+      "type": "neonOrange",
+      "x1": 3,
+      "y1": 3,
+      "z1": 12,
+      "x2": 12,
+      "y2": 8,
+      "z2": 12
+    },
+    {
+      "type": "neonOrange",
+      "x1": -12,
+      "y1": 3,
+      "z1": 34,
+      "x2": 12,
+      "y2": 8,
+      "z2": 34
+    },
+    {
+      "type": "neonOrange",
+      "x1": -12,
+      "y1": 3,
+      "z1": 12,
+      "x2": -12,
+      "y2": 8,
+      "z2": 34
+    },
+    {
+      "type": "neonOrange",
+      "x1": 12,
+      "y1": 3,
+      "z1": 12,
+      "x2": 12,
+      "y2": 8,
+      "z2": 34
+    },
+    {
+      "type": "neonBlue",
+      "x1": -12,
+      "y1": 8,
+      "z1": 12,
+      "x2": 12,
+      "y2": 8,
+      "z2": 34
+    },
+    {
+      "type": "neonPurple",
+      "x1": -6,
+      "y1": 2,
+      "z1": -6,
+      "x2": 6,
+      "y2": 3,
+      "z2": 6
+    },
+    {
+      "type": "neonPink",
+      "x1": -20,
+      "y1": 2,
+      "z1": 18,
+      "x2": -10,
+      "y2": 5,
+      "z2": 28
+    },
+    {
+      "type": "neonGreen",
+      "x1": 18,
+      "y1": 2,
+      "z1": 18,
+      "x2": 30,
+      "y2": 4,
+      "z2": 30
+    },
+    {
+      "type": "neonBlue",
+      "x1": -32,
+      "y1": 2,
+      "z1": 8,
+      "x2": -24,
+      "y2": 6,
+      "z2": 14
+    }
+  ],
+  "scatters": [
+    {
+      "on": "gridLine",
+      "type": "neonBlue",
+      "probability": 0.14,
+      "yOffset": 1
+    },
+    {
+      "on": "gridLine",
+      "type": "neonPink",
+      "probability": 0.1,
+      "yOffset": 1
+    },
+    {
+      "on": "gridLine",
+      "type": "neonGreen",
+      "probability": 0.08,
+      "yOffset": 1
+    }
   ]
 }

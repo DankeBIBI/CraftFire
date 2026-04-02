@@ -4,6 +4,7 @@
  */
 import type { BlockData } from '@/types/game'
 import { loadMapBlocks, type MapJSON } from './loader'
+import { generateRandomMapBlocks } from './randomGenerator'
 
 // ─── 类型定义 ────────────────────────────────────────
 
@@ -36,7 +37,7 @@ export interface MapDefinition {
 // ─── 加载所有地图 JSON ──────────────────────────────
 
 // Vite glob 导入（静态分析，build 时打包）
-const mapModules = import.meta.glob<MapJSON>(
+const mapModules = import.meta.glob<{ default: MapJSON }>(
   '@/assets/maps/*.json',
   { eager: true }
 )
@@ -61,7 +62,7 @@ function buildMapDef(json: MapJSON): MapDefinition {
 // 按稳定顺序排列（与原 MAPS 一致）
 const MAP_ID_ORDER = ['dust2', 'frozen_peak', 'jungle_temple', 'neon_grid', 'molten_core']
 
-export const MAPS: MapDefinition[] = MAP_ID_ORDER
+const STATIC_MAPS: MapDefinition[] = MAP_ID_ORDER
   .map((id) => {
     const entry = Object.entries(mapModules).find(([path]) =>
       path.includes(`/${id}.json`)
@@ -71,6 +72,31 @@ export const MAPS: MapDefinition[] = MAP_ID_ORDER
     return buildMapDef(json)
   })
   .filter(Boolean) as MapDefinition[]
+
+const RANDOM_MAP: MapDefinition = {
+  id: 'random_world',
+  name: '随机世界 · Random World',
+  description: '完全随机生成山地、树木与建筑。每次开局地图都不同。',
+  author: 'Procedural Generator',
+  difficulty: 'medium',
+  recommendedPlayers: '2-12',
+  size: '80x80',
+  estimatedBlocks: 9000,
+  environment: {
+    skyColor: '#9CCBFF',
+    fogColor: '#AFC9B8',
+    fogNear: 70,
+    fogFar: 240,
+    ambientIntensity: 0.52,
+    ambientColor: '#EAF6D7',
+    directionalIntensity: 0.85,
+    directionalColor: '#FFF0C8',
+    directionalPosition: [50, 95, 40],
+  },
+  generate: () => generateRandomMapBlocks(),
+}
+
+export const MAPS: MapDefinition[] = [...STATIC_MAPS, RANDOM_MAP]
 
 /** 根据 ID 查找地图 */
 export function getMapById(id: string): MapDefinition | undefined {

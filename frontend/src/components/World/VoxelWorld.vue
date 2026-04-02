@@ -5,6 +5,7 @@
  * 根据传入 mapId 应用对应的环境配置（天空色、雾效、光照）。
  */
 import { watch, onMounted, onUnmounted, ref } from 'vue'
+import { useRenderLoop } from '@tresjs/core'
 import {
   BoxGeometry,
   Color,
@@ -16,6 +17,7 @@ import {
   Object3D,
 } from 'three'
 import { useWorldStore } from '@/stores/world'
+import { useSettingsStore } from '@/stores/settings'
 import { getMapById } from '@/maps/index'
 import { logger } from '@/utils/logger'
 import type { BlockData } from '@/types/game'
@@ -25,7 +27,9 @@ const props = defineProps<{
 }>()
 
 const worldStore = useWorldStore()
+const settingsStore = useSettingsStore()
 const { scene, camera } = useTresContext()
+const { onLoop } = useRenderLoop()
 
 const voxelGroup = new Group()
 voxelGroup.name = 'voxel-world'
@@ -38,6 +42,18 @@ let attachedScene: Object3D | null = null
 let unwatchScene: (() => void) | null = null
 let unwatchBlocks: (() => void) | null = null
 let rebuildQueued = false
+let visibilityTick = 0
+
+const CHUNK_SIZE = 16
+
+interface ChunkRenderBucket {
+  centerX: number
+  centerY: number
+  centerZ: number
+  meshes: InstancedMesh[]
+}
+
+const chunkBuckets = new Map<string, ChunkRenderBucket>()
 
 // ─── 全地图方块颜色表 ────────────────────────────────
 
@@ -152,6 +168,34 @@ function clearVoxelMeshes(): void {
   for (let i = voxelGroup.children.length - 1; i >= 0; i--) {
     voxelGroup.remove(voxelGroup.children[i])
   }
+  chunkBuckets.clear()
+}
+
+function toChunkCoord(value: number): number {
+  return Math.floor(value / CHUNK_SIZE)
+}
+
+function chunkKeyFromBlock(block: BlockData): string {
+  const cx = toChunkCoord(block.x)
+  const cy = toChunkCoord(block.y)
+  const cz = toChunkCoord(block.z)
+  return `${cx},${cy},${cz}`
+}
+
+function registerChunkMesh(chunkKey: string, mesh: InstancedMesh): void {
+  const existed = chunkBuckets.get(chunkKey)
+  if (existed) {
+    existed.meshes.push(mesh)
+    return
+  }
+
+  const [cx, cy, cz] = chunkKey.split(',').map((v) => Number(v))
+  chunkBuckets.set(chunkKey, {
+    centerX: cx * CHUNK_SIZE + CHUNK_SIZE * 0.5,
+    centerY: cy * CHUNK_SIZE + CHUNK_SIZE * 0.5,
+    centerZ: cz * CHUNK_SIZE + CHUNK_SIZE * 0.5,
+    meshes: [mesh],
+  })
 }
 
 function rebuildVoxelMeshes(): void {
@@ -162,19 +206,23 @@ function rebuildVoxelMeshes(): void {
 
   blockMap.forEach((block) => {
     if (!isBlockVisible(blockMap, block)) return
-    const list = groupedBlocks.get(block.type)
+    const chunkKey = chunkKeyFromBlock(block)
+    const groupKey = `${block.type}|${chunkKey}`
+    const list = groupedBlocks.get(groupKey)
     if (list) {
       list.push(block)
     } else {
-      groupedBlocks.set(block.type, [block])
+      groupedBlocks.set(groupKey, [block])
     }
   })
 
-  groupedBlocks.forEach((blocks, type) => {
+  groupedBlocks.forEach((blocks, groupKey) => {
     if (!blocks.length) return
 
+    const [type, chunkKey] = groupKey.split('|')
+
     const mesh = new InstancedMesh(boxGeometry, getMaterial(type), blocks.length)
-    mesh.name = `voxels-${type}`
+    mesh.name = `voxels-${type}-${chunkKey}`
 
     for (let i = 0; i < blocks.length; i++) {
       const block = blocks[i]
@@ -183,7 +231,33 @@ function rebuildVoxelMeshes(): void {
     }
 
     mesh.instanceMatrix.needsUpdate = true
+    mesh.computeBoundingBox()
+    mesh.computeBoundingSphere()
+    mesh.frustumCulled = true
     voxelGroup.add(mesh)
+    registerChunkMesh(chunkKey, mesh)
+  })
+
+  updateChunkVisibility()
+}
+
+function updateChunkVisibility(): void {
+  const cam = camera.value
+  if (!cam) return
+
+  const renderDistance = Math.max(2, settingsStore.video.renderDistance)
+  const maxDistance = renderDistance * CHUNK_SIZE
+  const maxDistanceSq = maxDistance * maxDistance
+
+  chunkBuckets.forEach((bucket) => {
+    const dx = bucket.centerX - cam.position.x
+    const dy = bucket.centerY - cam.position.y
+    const dz = bucket.centerZ - cam.position.z
+    const inDistance = dx * dx + dy * dy + dz * dz <= maxDistanceSq
+
+    for (let i = 0; i < bucket.meshes.length; i++) {
+      bucket.meshes[i].visible = inDistance
+    }
   })
 }
 
@@ -218,10 +292,16 @@ onMounted(() => {
   )
 
   unwatchBlocks = watch(
-    () => worldStore.blocks,
+    () => worldStore.worldVersion,
     () => { queueRebuild() },
-    { deep: true, immediate: true },
+    { immediate: true },
   )
+
+  onLoop(() => {
+    visibilityTick += 1
+    if (visibilityTick % 3 !== 0) return
+    updateChunkVisibility()
+  })
 })
 
 // 地图切换时更新环境

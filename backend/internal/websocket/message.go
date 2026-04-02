@@ -14,6 +14,7 @@ const (
 	MsgPlayerMove      = "player_move"
 	MsgPlayerEquip     = "player_equip"
 	MsgPlayerStateSync = "player_state_sync"
+	MsgPlayerUpdate    = "player_update"
 	MsgBlockPlace      = "block_place"
 	MsgBlockRemove     = "block_remove"
 	MsgWorldUpdate     = "world_update"
@@ -22,6 +23,7 @@ const (
 	MsgPong            = "pong"
 	MsgChat            = "chat"
 	MsgError           = "error"
+	MsgBroadcast       = "broadcast"
 )
 
 // Message WebSocket 消息信封结构体。
@@ -133,4 +135,29 @@ type WorldChangeEntry struct {
 // WorldUpdatePayload 世界更新消息的负载数据。
 type WorldUpdatePayload struct {
 	Changes []WorldChangeEntry `json:"changes"`
+}
+
+// ChatPayload 聊天消息的负载数据。
+type ChatPayload struct {
+	PlayerID   string `json:"playerId"`
+	PlayerName string `json:"playerName"`
+	Content    string `json:"content"`
+	Timestamp  int64  `json:"timestamp"`
+}
+
+// PlayerUpdatePayload 玩家状态更新消息的负载数据。
+type PlayerUpdatePayload struct {
+	PlayerID string `json:"playerId"`
+	Health   int    `json:"health"`
+	Position struct {
+		X float64 `json:"x"`
+		Y float64 `json:"y"`
+		Z float64 `json:"z"`
+	} `json:"position"`
+}
+
+// BroadcastPayload 广播消息的负载数据。
+type BroadcastPayload struct {
+	Message   string `json:"message"`
+	Timestamp int64  `json:"timestamp"`
 }

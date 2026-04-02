@@ -28,7 +28,7 @@ type GetBlockFn = (x: number, y: number, z: number) => boolean;
  * 用于在低服务器 Tick Rate 下保持玩家操作的即时响应。
  */
 export class PhysicsService {
-	private velocity = { x: 0, y: 0, z: 0 };
+	public velocity = { x: 0, y: 0, z: 0 };
 	private isGrounded = false;
 
 	/**

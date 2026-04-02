@@ -62,6 +62,12 @@ export const usePlayerStore = defineStore("player", () => {
     }
   }
 
+  function updateLocalVelocity(vel: Vector3) {
+    if (localPlayer.value) {
+      localPlayer.value.velocity = { ...vel };
+    }
+  }
+
   function updateLocalRotation(rot: Rotation) {
     if (localPlayer.value) {
       localPlayer.value.rotation = { ...rot };
@@ -159,6 +165,7 @@ export const usePlayerStore = defineStore("player", () => {
     // Actions
     initLocalPlayer,
     updateLocalPosition,
+    updateLocalVelocity,
     updateLocalRotation,
     updateLocalHealth,
     getLocalAmmo,

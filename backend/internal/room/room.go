@@ -20,6 +20,8 @@ type Room struct {
 	GameMode   string
 	CreatedAt  time.Time
 	IsPublic   bool
+	IsLocked   bool   // 房间是否锁定
+	WorldSeed  string // 世界种子
 
 	hub      *websocket.Hub
 	wsServer *websocket.Server
@@ -179,4 +181,98 @@ func (r *Room) Shutdown() {
 	if r.wsServer != nil {
 		r.wsServer.Stop()
 	}
+}
+
+// SetLocked 设置房间锁定状态。
+func (r *Room) SetLocked(locked bool) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.IsLocked = locked
+	applogger.Info("房间 %s 已%s", r.ID, map[bool]string{true: "锁定", false: "解锁"}[locked])
+}
+
+// Broadcast 广播消息给房间内所有玩家。
+func (r *Room) Broadcast(message string) error {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	msg, err := websocket.NewMessage(websocket.MsgChat, "", r.ID, websocket.ChatPayload{
+		PlayerID:   "SYSTEM",
+		PlayerName: "系统",
+		Content:    message,
+		Timestamp:  time.Now().UnixMilli(),
+	})
+	if err != nil {
+		return err
+	}
+	r.hub.Broadcast(msg)
+	return nil
+}
+
+// HealPlayer 为指定玩家恢复生命值。
+func (r *Room) HealPlayer(playerId string) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	p, exists := r.players[playerId]
+	if !exists {
+		return fmt.Errorf("玩家 %s 不存在", playerId)
+	}
+
+	p.Health = 100
+	applogger.Info("玩家 %s 生命值已恢复", playerId)
+
+	// 广播玩家状态更新
+	msg, _ := websocket.NewMessage(websocket.MsgPlayerUpdate, playerId, r.ID, websocket.PlayerUpdatePayload{
+		PlayerID: playerId,
+		Health:   p.Health,
+		Position: p.Position,
+	})
+	r.hub.Broadcast(msg)
+	return nil
+}
+
+// TeleportPlayer 传送玩家到指定位置。
+func (r *Room) TeleportPlayer(playerId string, x, y, z float64) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	p, exists := r.players[playerId]
+	if !exists {
+		return fmt.Errorf("玩家 %s 不存在", playerId)
+	}
+
+	p.Position.X = x
+	p.Position.Y = y
+	p.Position.Z = z
+	applogger.Info("玩家 %s 已被传送到 (%.1f, %.1f, %.1f)", playerId, x, y, z)
+
+	// 广播玩家状态更新
+	msg, _ := websocket.NewMessage(websocket.MsgPlayerUpdate, playerId, r.ID, websocket.PlayerUpdatePayload{
+		PlayerID: playerId,
+		Health:   p.Health,
+		Position: p.Position,
+	})
+	r.hub.Broadcast(msg)
+	return nil
+}
+
+// UpdateConfig 更新房间配置。
+func (r *Room) UpdateConfig(maxPlayers int, gameMode, worldSeed string, isPublic bool) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	if maxPlayers > 0 && maxPlayers <= 50 {
+		r.MaxPlayers = maxPlayers
+	}
+	if gameMode != "" {
+		r.GameMode = gameMode
+	}
+	if worldSeed != "" {
+		r.WorldSeed = worldSeed
+	}
+	r.IsPublic = isPublic
+
+	applogger.Info("房间 %s 配置已更新: maxPlayers=%d, gameMode=%s, isPublic=%v", r.ID, r.MaxPlayers, r.GameMode, r.IsPublic)
+	return nil
 }
